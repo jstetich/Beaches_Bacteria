@@ -168,12 +168,13 @@ cens_data <- raw_data %>%
   mutate(Bacteria = if_else((! is.na(Lab.Qualifier)) & Lab.Qualifier == 'U',
                                     Reporting.Limit,
                                     Concentration),
-         Bacteria_Flag = Lab.Qualifier == 'U')
+         Censored_Flag = Lab.Qualifier == 'U',
+         Censored_Flag = replace_na(Censored_Flag, FALSE))
 ```
 
 ```{r}
 cens_data %>%
-ggplot(aes(Bacteria, fill = Bacteria_Flag)) +
+ggplot(aes(Bacteria, fill = Censored_Flag)) +
   geom_histogram() +
   scale_x_log10()
 ```
@@ -182,8 +183,8 @@ ggplot(aes(Bacteria, fill = Bacteria_Flag)) +
 cens_data %>%
   mutate(year = as.numeric(format(sdatetime, format = '%Y'))) %>% 
   filter(Bacteria == 10) %>%
-  ggplot(aes(x = year, fill = Bacteria_Flag)) + 
-  geom_bar() #aes(fill = Bacteria_Flag))
+  ggplot(aes(x = year, fill = Censored_Flag)) + 
+  geom_bar() #aes(fill = Censored_Flag))
 ```
 It is interesting that value 10 detects and the number of non-detects appear 
 related.
@@ -236,7 +237,8 @@ wide_data <- raw_data %>%
   mutate(Bacteria = if_else((! is.na(Lab.Qualifier)) & Lab.Qualifier == 'U',
                                     Reporting.Limit,
                                     ENTEROCOCCI),
-         Bacteria_Flag = Lab.Qualifier == 'U') %>%
+         Censored_Flag = Lab.Qualifier == 'U',
+         Censored_Flag = replace_na(Censored_Flag, FALSE)) %>%
   
   rename(Enterococci = ENTEROCOCCI,
          Salinity = `SALINITY (FROM SODIUM)`,
@@ -463,7 +465,7 @@ wide_data <- wide_data %>%
   relocate(c(SiteCode, sdatetime, sdate, Year,
              Month, DOY, Sample.Id, Sample.Qual,
              Enterococci, Reporting.Limit, Lab.Qualifier,
-             Bacteria, Bacteria_Flag,
+             Bacteria, Censored_Flag,
              Rain24, Rain48))
 ```
 

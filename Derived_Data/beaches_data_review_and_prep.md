@@ -241,12 +241,13 @@ cens_data <- raw_data %>%
   mutate(Bacteria = if_else((! is.na(Lab.Qualifier)) & Lab.Qualifier == 'U',
                                     Reporting.Limit,
                                     Concentration),
-         Bacteria_Flag = Lab.Qualifier == 'U')
+         Censored_Flag = Lab.Qualifier == 'U',
+         Censored_Flag = replace_na(Censored_Flag, FALSE))
 ```
 
 ``` r
 cens_data %>%
-ggplot(aes(Bacteria, fill = Bacteria_Flag)) +
+ggplot(aes(Bacteria, fill = Censored_Flag)) +
   geom_histogram() +
   scale_x_log10()
 #> `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
@@ -258,8 +259,8 @@ ggplot(aes(Bacteria, fill = Bacteria_Flag)) +
 cens_data %>%
   mutate(year = as.numeric(format(sdatetime, format = '%Y'))) %>% 
   filter(Bacteria == 10) %>%
-  ggplot(aes(x = year, fill = Bacteria_Flag)) + 
-  geom_bar() #aes(fill = Bacteria_Flag))
+  ggplot(aes(x = year, fill = Censored_Flag)) + 
+  geom_bar() #aes(fill = Censored_Flag))
 ```
 
 <img src="beaches_data_review_and_prep_files/figure-gfm/unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
@@ -385,7 +386,8 @@ wide_data <- raw_data %>%
   mutate(Bacteria = if_else((! is.na(Lab.Qualifier)) & Lab.Qualifier == 'U',
                                     Reporting.Limit,
                                     ENTEROCOCCI),
-         Bacteria_Flag = Lab.Qualifier == 'U') %>%
+         Censored_Flag = Lab.Qualifier == 'U',
+         Censored_Flag = replace_na(Censored_Flag, FALSE)) %>%
   
   rename(Enterococci = ENTEROCOCCI,
          Salinity = `SALINITY (FROM SODIUM)`,
@@ -713,7 +715,7 @@ wide_data <- wide_data %>%
   relocate(c(SiteCode, sdatetime, sdate, Year,
              Month, DOY, Sample.Id, Sample.Qual,
              Enterococci, Reporting.Limit, Lab.Qualifier,
-             Bacteria, Bacteria_Flag,
+             Bacteria, Censored_Flag,
              Rain24, Rain48))
 #> Joining, by = c("SiteCode", "sdatetime", "Sample.Id", "sdate", "Year", "Month", "DOY")
 ```
@@ -793,7 +795,7 @@ names(wide_data)
 #>  [1] "SiteCode"         "sdatetime"        "sdate"            "Year"            
 #>  [5] "Month"            "DOY"              "Sample.Id"        "Sample.Qual"     
 #>  [9] "Enterococci"      "Reporting.Limit"  "Lab.Qualifier"    "Bacteria"        
-#> [13] "Bacteria_Flag"    "Rain24"           "Rain48"           "Salinity"        
+#> [13] "Censored_Flag"    "Rain24"           "Rain48"           "Salinity"        
 #> [17] "Air_Temp"         "Water_Temp"       "Weather"          "Past24HR_Weather"
 #> [21] "Past48HR_Weather" "Tide_Stage"       "Water_Surface"    "Current"
 ```
