@@ -219,7 +219,7 @@ xanchor <- 3.75
 yanchor <- 2200
 
 jitter_plt <- jitter_plt + 
-  stat_summary(fun = gm_mean, fill = 'gray85', shape = 23) +
+  stat_summary(fun = gm_mean, color = 'red', color = 'red', shape = 15) +
   
   annotate('point', x= xanchor, y = yanchor,
             size = 3, pch = 23, fill = 'gray85') +
@@ -285,7 +285,7 @@ xanchor <- 3.5
 yanchor <- 1500
 
 violin_plt + 
-  stat_summary(fun = gm_mean, fill = 'gray85', shape = 23) +
+  stat_summary(fun = gm_mean, color = 'red', color = 'red', shape = 15) +
   
   annotate('point', x= xanchor, y = yanchor,
             size = 3, pch = 23, fill = 'gray85') +
@@ -323,7 +323,7 @@ recent_data %>%
 
   ylab('Enterococci (MPN)') +
   xlab('') +
-  stat_summary(fun = gm_mean, fill = 'gray85', shape = 23)
+  stat_summary(fun = gm_mean, color = 'red', color = 'red', shape = 15)
 ```
 
 ### With Color by Detection
@@ -357,7 +357,7 @@ plt <- recent_data %>%
   xlab('')
 
 plt +
-  stat_summary(fun = gm_mean, fill = 'gray85', shape = 23)
+  stat_summary(fun = gm_mean, color = 'red', color = 'red', shape = 15)
 
 ```
 
