@@ -1,11 +1,12 @@
-Analysis of Bacteria Levels at Casco Bay Beaches
+Graphics for Bacteria Levels at Casco Bay Beaches
 ================
 Curtis C. Bohlen, Casco Bay Estuary Partnership.
 01/23/2021
 
 -   [Introduction](#introduction)
+    -   [Handling non-detects](#handling-non-detects)
     -   [Standards](#standards)
-        -   [Beaces Program](#beaces-program)
+        -   [Beaches Program](#beaches-program)
         -   [Maine State Class SB Waters
             Standards](#maine-state-class-sb-waters-standards)
 -   [Import Libraries](#import-libraries)
@@ -15,16 +16,20 @@ Curtis C. Bohlen, Casco Bay Estuary Partnership.
     -   [Add a “Beach” Identifier](#add-a-beach-identifier)
     -   [Add a “Day of the Week”
         Identifier](#add-a-day-of-the-week-identifier)
-    -   [Add Maximum Likelihood estimate for
-        non-detects](#add-maximum-likelihood-estimate-for-non-detects)
+    -   [Add Maximum Likelihood Estimate for
+        Non-detects](#add-maximum-likelihood-estimate-for-non-detects)
     -   [Calculate Exceedences](#calculate-exceedences)
 -   [Recent Status](#recent-status)
-    -   [Graphic Concepts](#graphic-concepts)
-    -   [Create Geometric Mean
-        Function](#create-geometric-mean-function)
+    -   [Based on Non-detects at Reporting
+        Limit](#based-on-non-detects-at-reporting-limit)
+    -   [Based on Non-detects at Maximum Likelihood
+        Estimator](#based-on-non-detects-at-maximum-likelihood-estimator)
+-   [Create Geometric Mean Function](#create-geometric-mean-function)
+-   [Plots of Recent Condition](#plots-of-recent-condition)
     -   [Dot Plot (Fails….)](#dot-plot-fails.)
-    -   [Jitter Plot Bare](#jitter-plot-bare)
+    -   [Jitter Plot](#jitter-plot)
         -   [Add Geometric Means](#add-geometric-means)
+        -   [Add Annotations](#add-annotations)
     -   [Violin Plot with Jitter](#violin-plot-with-jitter)
         -   [Add Geometric Means](#add-geometric-means-1)
     -   [Boxplot with Jitter](#boxplot-with-jitter)
@@ -40,11 +45,54 @@ Curtis C. Bohlen, Casco Bay Estuary Partnership.
 
 # Introduction
 
-To be added….
+We present code for generating draft graphics for the “State of Casco
+Bay” report, relating specifically to levels of bacteria observed at
+swimming beaches.
+
+The Beaches program monitors bacteria levels (currently) at six Casco
+Bay beaches. Data is collected periodically (usually weekly) at each
+beach, to inform beach managers and the public about possible risk of
+swimming in water that may be polluted by certain pathogens.
+
+The Beaches program measures “enterococci” bacteria, while DMR’s
+shellfish program monitor’s “*E. coli*” bacteria. the two measures are
+generally correlated, but are not directly comparable because of
+different methods.
+
+## Handling non-detects
+
+**All graphics here treat non-detects as equal to the Reporting Limit!**
+
+We generally prefer to replace non-detects with an estimate of what
+“would have been observed” if the methods were more sensitive. One can
+generate such estimates (more correctly, expected values of such
+estimates) based on certain statistical assumptions. While those
+assumptions can be called into question, such methods are usually
+preferable to ignoring non-detects, assuming they represent “the value
+of”true" measurements of zero, or making other *ad hoc* assumptions.
+
+Unfortunately, we could not use statistical methods to correct for
+non-detects with the data on bacteria levels at shellfish growing areas.
+For technical reasons, some of the statistical methods we used to
+analyze the shellfish data do not work with data that replaces
+non-detects wit hmaximum likelihood estimates of the (expected value of)
+the unobserved values.
+
+For consistency in presentation in the State of Casco Bay Report, all
+GRAPHICS for both Beaches and Shellfish bacteria data are presented
+using the same conventions, including using data that treats non-detects
+as equal to their detection limits. Because bacteria data are so skewed
+and heavy tailed, this has only modest effect on many summary
+statistics. However it does alter values of low quantiles and geometric
+means.
+
+Most statistical testing for the Beaches data are based on data that
+replaces non-detects with maximum likelihood estimators of their
+conditional means.
 
 ## Standards
 
-### Beaces Program
+### Beaches Program
 
 104 CFU / 100 ml, for individual observations.
 
@@ -164,7 +212,7 @@ beach_data <- beach_data %>%
   relocate(Weekday, .after = Month)
 ```
 
-## Add Maximum Likelihood estimate for non-detects
+## Add Maximum Likelihood Estimate for Non-detects
 
 This uses our LCensMeans package, and estimates a maximum likelihood
 estimate of the expected value of the (unobserved) left censored values.
@@ -172,9 +220,16 @@ It relies on several assumption that are questionable for these data,
 but it is arguably better than using the detection limit or half the
 detection limit.
 
+Unfortunately, some of the more sophisticated models we run on the
+shellfish data do not work with data transformed in this way. For
+consistency, all GRAPHICS for both BEaches and Shellfish bacteria data
+are presented showing data treating non-detects at the nominal detection
+limit. For the BEaches data, most of the analyses were based on data
+that substituted ML estimators for the non-detects.
+
 ``` r
 beach_data <- beach_data %>%
-mutate(Bacteria2 = sub_cmeans(Bacteria, Censored_Flag) )
+  mutate(Bacteria2 = sub_cmeans(Bacteria, Censored_Flag) )
 ```
 
 ## Calculate Exceedences
@@ -187,43 +242,69 @@ beach_data <- beach_data %>%
 
 # Recent Status
 
+## Based on Non-detects at Reporting Limit
+
 ``` r
 recent_data <- beach_data %>%
   filter(Year > 2015)
+```
 
+``` r
 recent_data %>%
   group_by(SiteCode) %>%
   summarize( years = length(unique(Year)),
-             median_Bacteria = median(Bacteria2, na.rm = TRUE),
-             gmean_bacteria = exp(mean(log(Bacteria2),nas.rm = TRUE)),
-             mean_Bacteria = mean(Bacteria2, na.rm = TRUE),
+             median_Bacteria = median(Bacteria, na.rm = TRUE),
+             gmean_bacteria = exp(mean(log(Bacteria),nas.rm = TRUE)),
+             mean_Bacteria = mean(Bacteria, na.rm = TRUE),
              n = sum(! is.na(Bacteria)),
              n_exceeds = sum(Exceeds, na.rm = TRUE),
              p_exceeds = n_exceeds / n)
 #> # A tibble: 6 x 8
 #>   SiteCode years median_Bacteria gmean_bacteria mean_Bacteria     n n_exceeds
 #> * <chr>    <int>           <dbl>          <dbl>         <dbl> <int>     <int>
-#> 1 BC-1         4            3.54           7.44         37.1     51         2
+#> 1 BC-1         4              10           13.7          40.8    51         2
+#> 2 EEB-01       4              10           16.0          39.4   103         8
+#> 3 HARP-1       2              10           10.           10      25         0
+#> 4 HARP-2       2              10           14.7          22.7    26         1
+#> 5 HARP-3       2              20           23.7          43.9    26         4
+#> 6 WIL-02       4              10           21.9         246.    105         9
+#> # ... with 1 more variable: p_exceeds <dbl>
+```
+
+## Based on Non-detects at Maximum Likelihood Estimator
+
+Note that the geometric means, in particular, and some means, are
+substantially lower.
+
+``` r
+recent_data %>%
+  group_by(SiteCode) %>%
+  summarize( years = length(unique(Year)),
+             median_Bacteria = median(Bacteria2, na.rm = TRUE),
+             gmean_bacteria = exp(mean(log(Bacteria2),nas.rm = TRUE)),
+             mean_Bacteria = mean(Bacteria2, na.rm = TRUE),
+             n = sum(! is.na(Bacteria2)),
+             n_exceeds = sum(Exceeds, na.rm = TRUE),
+             p_exceeds = n_exceeds / n)
+#> # A tibble: 6 x 8
+#>   SiteCode years median_Bacteria gmean_bacteria mean_Bacteria     n n_exceeds
+#> * <chr>    <int>           <dbl>          <dbl>         <dbl> <int>     <int>
+#> 1 BC-1         4            3.53           7.43         37.1     51         2
 #> 2 EEB-01       4           10              9.43         36.1    103         8
-#> 3 HARP-1       2            3.41           3.88          4.20    25         0
-#> 4 HARP-2       2            3.54           7.38         18.4     26         1
-#> 5 HARP-3       2           20             17.1          41.9     26         4
+#> 3 HARP-1       2            3.46           3.92          4.24    25         0
+#> 4 HARP-2       2            3.51           7.34         18.4     26         1
+#> 5 HARP-3       2           20             17.0          41.8     26         4
 #> 6 WIL-02       4           10             14.9         244.     105         9
 #> # ... with 1 more variable: p_exceeds <dbl>
 ```
 
-Note that the median BActeria for pretty much all of these stations is
+Note that the median Bacteria for pretty much all of these stations is
 at or below the lower detection limit. (That is possible because we have
 replaced non-detects by an estimate of the conditional mean expected for
 unobserved censored values). That means the data is at or below the
 detection limits more than 50% of the time.
 
 ``` r
-cat('Omitting non-detects\n')
-#> Omitting non-detects
-summary(recent_data$Enterococci)
-#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#>      10      10      20     189      52   15531     165
 cat('\nNon-detects at Detection Limit\n')
 #> 
 #> Non-detects at Detection Limit
@@ -235,23 +316,21 @@ cat('\nNon-detects at maximum likelihood estimator\n')
 #> Non-detects at maximum likelihood estimator
 summary(recent_data$Bacteria2)
 #>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-#>     3.205     3.441    10.000    97.864    20.000 15531.000
+#>     3.184     3.441    10.000    97.865    20.000 15531.000
 cat('\nGeometric Mean\n')
 #> 
 #> Geometric Mean
 exp(mean(log(recent_data$Bacteria2)))
-#> [1] 10.08517
-cat('\n\nProbability of Violating Standards\n')
+#> [1] 10.08902
+cat('\n\nProbability of Violating Standard\n')
 #> 
 #> 
-#> Probability of Violating Standards
+#> Probability of Violating Standard
 sum(recent_data$Exceeds) / sum(! is.na(recent_data$Exceeds))
 #> [1] 0.07142857
 ```
 
-## Graphic Concepts
-
-## Create Geometric Mean Function
+# Create Geometric Mean Function
 
 ``` r
 gm_mean <- function(x) {
@@ -259,11 +338,13 @@ gm_mean <- function(x) {
 }
 ```
 
+# Plots of Recent Condition
+
 ## Dot Plot (Fails….)
 
 ``` r
 recent_data %>%
-  ggplot(aes(x = Beach, y = Bacteria2, fill = Beach)) +
+  ggplot(aes(x = Beach, y = Bacteria, fill = Beach)) +
   geom_dotplot(binaxis = "y", 
                stackdir = "centerwhole", 
                position = "dodge",
@@ -294,16 +375,16 @@ recent_data %>%
   #geom_bar(data = plain_emms, mapping = aes(Beach, response))
 ```
 
-## Jitter Plot Bare
+## Jitter Plot
 
 ``` r
 jitter_plt <- recent_data %>%
-  ggplot(aes(x = Beach, y = Bacteria2)) +
+  ggplot(aes(x = Beach, y = Bacteria)) +
   
   geom_jitter(aes(color = Censored_Flag),
-              width = 0.2, 
+              width = 0.3, 
               height = .05,
-              alpha = .75) +
+              alpha = 0.5) +
   
   scale_y_log10() +
   scale_color_manual(values = cbep_colors(), 
@@ -313,13 +394,12 @@ jitter_plt <- recent_data %>%
 
   theme(axis.text.x = element_text(angle = 45, size = 9, hjust = 1)) +
   theme(legend.position = c(.65, .9)) +
+  
+  guides(color = guide_legend(override.aes = list(alpha = c(0.5,0.751) ) )) +
 
   ylab('Enterococci (MPN)') +
   xlab('')
-jitter_plt
 ```
-
-<img src="beaches_graphics_files/figure-gfm/jitter_bare-1.png" style="display: block; margin: auto;" />
 
 ### Add Geometric Means
 
@@ -331,39 +411,32 @@ xanchor <- 3.75
 yanchor <- 2200
 
 jitter_plt <- jitter_plt + 
-  stat_summary(fun = gm_mean, fill = 'gray85', shape = 23) +
+  stat_summary(fun = gm_mean, fill = 'red',shape = 22) 
   
-  annotate('point', x= xanchor, y = yanchor,
-            size = 3, pch = 23, fill = 'gray85') +
-
-  annotate('text', x= xanchor + 0.25, y = yanchor,
-           hjust = 0, size = 3.5, label = 'Geometric Mean')
-jitter_plt
-#> Warning: Removed 6 rows containing missing values (geom_segment).
+  # annotate('point', x= xanchor, y = yanchor,
+  #           size = 3, pch = 22, fill = 'red') +
+  # annotate('text', x= xanchor + 0.25, y = yanchor,
+  #          hjust = 0, size = 3.5, label = 'Geometric Mean')
 ```
 
-<img src="beaches_graphics_files/figure-gfm/jitter_w_geom_mean-1.png" style="display: block; margin: auto;" />
-\#\#\# Add Annotations
+### Add Annotations
 
 ``` r
 jitter_plt +
-  geom_hline(yintercept = 104, color = 'gray50', lty = 3) #+
-#> Warning: Removed 6 rows containing missing values (geom_segment).
-```
-
-<img src="beaches_graphics_files/figure-gfm/jitter_all-1.png" style="display: block; margin: auto;" />
-
-``` r
+  geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
   #geom_hline(yintercept = 8, color = 'gray50', lty = 3) +
   
-  #annotate('text', x = 0, y = 80, label = 'Acute = 104', size = 2.5, hjust = 0) +
+  annotate('text', x = 0, y  = 130, label = '104 MPN', size = 2.5, hjust = 0) +
   #annotate('text', x = 0, y = 6, label = 'Chronic = 8', size = 2.5, hjust = 0) 
-
 
 ggsave('figures/recent_conditons_jitter.pdf', device = cairo_pdf, 
        width = 5, height = 4)
 #> Warning: Removed 6 rows containing missing values (geom_segment).
+
+#> Warning: Removed 6 rows containing missing values (geom_segment).
 ```
+
+<img src="beaches_graphics_files/figure-gfm/jitter_all-1.png" style="display: block; margin: auto;" />
 
 ## Violin Plot with Jitter
 
@@ -374,7 +447,7 @@ dots to signal sample size.
 
 ``` r
 violin_plt <- recent_data %>%
-  ggplot(aes(x = Beach, y = Bacteria2)) +
+  ggplot(aes(x = Beach, y = Bacteria)) +
   geom_violin(scale = 'width',
               width = .75,
               # draw_quantiles = c(0.25, 0.5, 0.75),
@@ -384,10 +457,10 @@ violin_plt <- recent_data %>%
   geom_jitter(aes(color = Censored_Flag),
               width = 0.15, 
               height = .05,
-              alpha = 0.75) +
+              alpha = 0.5) +
   
   geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
- # geom_hline(yintercept = 8, color = 'gray50', lty = 3) +
+  annotate('text', x = 0, y  = 130, label = '104 MPN', size = 2.5, hjust = 0) +
   
   scale_y_log10() +
   scale_color_manual(values = cbep_colors(), 
@@ -398,12 +471,11 @@ violin_plt <- recent_data %>%
   theme(axis.text.x = element_text(angle = 45, size = 9, hjust = 1)) +
   theme(legend.position = c(.65, .9)) +
 
+  guides(color = guide_legend(override.aes = list(alpha = c(0.5,0.75) ) )) +
+
   ylab('Enterococci (MPN)') +
   xlab('')
-violin_plt
 ```
-
-<img src="beaches_graphics_files/figure-gfm/violin_start-1.png" style="display: block; margin: auto;" />
 
 ### Add Geometric Means
 
@@ -412,19 +484,19 @@ xanchor <- 3.5
 yanchor <- 1500
 
 violin_plt + 
-  stat_summary(fun = gm_mean, fill = 'gray85', shape = 23) +
-  
-  annotate('point', x= xanchor, y = yanchor,
-            size = 3, pch = 23, fill = 'gray85') +
-
-  annotate('text', x= xanchor + 0.3, y = yanchor,
-           hjust = 0, size = 3.5, label = 'Geometric Mean')
+  stat_summary(fun = gm_mean, fill = 'red',shape = 22) 
 #> Warning: Removed 6 rows containing missing values (geom_segment).
 ```
 
 <img src="beaches_graphics_files/figure-gfm/violin_final-1.png" style="display: block; margin: auto;" />
 
 ``` r
+  
+  # annotate('point', x= xanchor, y = yanchor,
+  #           size = 3, pch = 22, fill = 'red') +
+  # annotate('text', x= xanchor + 0.3, y = yanchor,
+  #          hjust = 0, size = 3.5, label = 'Geometric Mean')
+
 ggsave('figures/recent_conditons_jitter_violin.pdf', device = cairo_pdf, 
        width = 5, height = 4)
 #> Warning: Removed 6 rows containing missing values (geom_segment).
@@ -436,7 +508,7 @@ ggsave('figures/recent_conditons_jitter_violin.pdf', device = cairo_pdf,
 
 ``` r
 recent_data %>%
-  ggplot(aes(x = Beach, y = Bacteria2)) +
+  ggplot(aes(x = Beach, y = Bacteria)) +
   geom_boxplot(width = .6, outlier.shape = NA) +
   geom_jitter(aes(color = Rain48), width = 0.25, 
               height = .05, 
@@ -458,7 +530,7 @@ recent_data %>%
 
   ylab('Enterococci (MPN)') +
   xlab('') +
-  stat_summary(fun = gm_mean, fill = 'gray85', shape = 23)
+  stat_summary(fun = gm_mean, fill = 'red',shape = 22)
 #> Warning: Removed 6 rows containing missing values (geom_segment).
 ```
 
@@ -468,16 +540,16 @@ recent_data %>%
 
 ``` r
 plt <- recent_data %>%
-  ggplot(aes(x = Beach, y = Bacteria2)) +
+  ggplot(aes(x = Beach, y = Bacteria)) +
   geom_boxplot(width = .6, outlier.shape = NA) +
   geom_jitter(aes(color = Censored_Flag),
               width = 0.25, 
               height = .05, 
               #color = cbep_colors()[5],
-              alpha = 0.75) +
+              alpha = 0.5) +
   
   geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
-  #geom_hline(yintercept = 8, color = 'gray50', lty = 3) +
+  annotate('text', x = 0, y  = 130, label = '104 MPN', size = 2.5, hjust = 0) +
   
   scale_y_log10() +
   
@@ -494,13 +566,7 @@ plt <- recent_data %>%
 
   ylab('Enterococci (MPN)') +
   xlab('')
-
-plt +
-  stat_summary(fun = gm_mean, fill = 'gray85', shape = 23)
-#> Warning: Removed 6 rows containing missing values (geom_segment).
 ```
-
-<img src="beaches_graphics_files/figure-gfm/boxplot_detection-1.png" style="display: block; margin: auto;" />
 
 ### Add Annotation
 
@@ -525,12 +591,7 @@ plt2 <- plt +
            hjust = 0, size = 3, label = 'median') +
   annotate('text', x= xanchor + 0.2, y = yhigh,
            hjust = 0, size = 3, label = '75th percentile')
-  
-  
-plt2
 ```
-
-<img src="beaches_graphics_files/figure-gfm/boxplot_annotation-1.png" style="display: block; margin: auto;" />
 
 ### Add Geometric Means
 
@@ -538,21 +599,19 @@ plt2
 plt2 + 
    stat_summary(fun = gm_mean, shape = 23, fill = 'gray85') +
 
-annotate('point', x= xanchor, y = yanchor * (4/9),
-            size = 3, pch = 23, fill = 'gray85') +
+# annotate('point', x= xanchor, y = yanchor * (4/9),
+#             size = 3, pch = 22, fill = 'red') +
+# annotate('text', x= xanchor + 0.2, y = yanchor * (4/9),
+#            hjust = 0, size = 3, label = 'geometric mean')
 
-annotate('text', x= xanchor + 0.2, y = yanchor * (4/9),
-           hjust = 0, size = 3, label = 'geometric mean')
+ggsave('figures/recent_conditons_jitter_box.pdf', device = cairo_pdf, 
+       width = 5, height = 4)
+#> Warning: Removed 6 rows containing missing values (geom_segment).
+
 #> Warning: Removed 6 rows containing missing values (geom_segment).
 ```
 
 <img src="beaches_graphics_files/figure-gfm/boxplot_final-1.png" style="display: block; margin: auto;" />
-
-``` r
-ggsave('figures/recent_conditons_jitter_box.pdf', device = cairo_pdf, 
-       width = 5, height = 4)
-#> Warning: Removed 6 rows containing missing values (geom_segment).
-```
 
 # Trend Graphics
 
@@ -567,13 +626,13 @@ records only.
 ``` r
 trend_data <- beach_data %>%
   filter(SiteCode == 'WIL-02' | SiteCode == 'EEB-01') %>%
-  filter(! is.na(Bacteria2)) %>%
+  filter(! is.na(Bacteria)) %>%
   filter(Year > 2004) %>%
   filter(Reporting_Limit > 5 | is.na(Reporting_Limit))
 ```
 
 ``` r
-plt <- ggplot(trend_data, aes(x = Year, y = Bacteria2, color = Censored_Flag)) +
+plt <- ggplot(trend_data, aes(x = Year, y = Bacteria, color = Censored_Flag)) +
   geom_jitter(alpha = .5, height = 0.025, width = 0.2) +
   scale_y_log10() +
   scale_x_continuous(breaks = c(2006, 2010, 2014, 2018)) +
