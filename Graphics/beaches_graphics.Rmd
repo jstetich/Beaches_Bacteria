@@ -125,6 +125,13 @@ beach_data <- beach_data %>%
                                                beach_lookup$SamplePoint)])
 ```
 
+## Simplify and Correct Beach Names
+```{r}
+beach_data <- beach_data %>%
+  mutate(Beach = if_else(Beach == 'Stovers Point Preserve', "Stover's Point", Beach)) %>%
+  mutate(Beach = if_else(Beach == 'Broad Cove Reserve', "Broad Cove", Beach)) %>%
+  mutate(Beach = if_else(Beach == 'Mitchell Field Beach', "Mitchell Field", Beach))
+```
 
 ## Add a "Day of the Week" Identifier
 We need this to help evaluate whether samples are "normal" samples or "storm"
@@ -179,7 +186,6 @@ recent_data %>%
 
 ```
 
-
 ## Based on Non-detects at Maximum Likelihood Estimator
 Note that the geometric means, in particular, and some means, are substantially
 lower.
@@ -228,8 +234,7 @@ recent_data %>%
                stackdir = "centerwhole", 
                position = "dodge",
                binpositions = 'all',
-               method = 'histodot', 
-               shape = 22,
+               method = 'histodot',
                stroke = 0,
                binwidth = .2) +
   stat_summary(fun = gm_mean, fill = 'red', shape = 23) +

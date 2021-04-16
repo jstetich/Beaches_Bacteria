@@ -14,6 +14,8 @@ Curtis C. Bohlen, Casco Bay Estuary Partnership.
     -   [Initial Folder References](#initial-folder-references)
     -   [Load Data](#load-data)
     -   [Add a “Beach” Identifier](#add-a-beach-identifier)
+    -   [Simplify and Correct Beach
+        Names](#simplify-and-correct-beach-names)
     -   [Add a “Day of the Week”
         Identifier](#add-a-day-of-the-week-identifier)
     -   [Add Maximum Likelihood Estimate for
@@ -201,6 +203,15 @@ beach_data <- beach_data %>%
                                                beach_lookup$SamplePoint)])
 ```
 
+## Simplify and Correct Beach Names
+
+``` r
+beach_data <- beach_data %>%
+  mutate(Beach = if_else(Beach == 'Stovers Point Preserve', "Stover's Point", Beach)) %>%
+  mutate(Beach = if_else(Beach == 'Broad Cove Reserve', "Broad Cove", Beach)) %>%
+  mutate(Beach = if_else(Beach == 'Mitchell Field Beach', "Mitchell Field", Beach))
+```
+
 ## Add a “Day of the Week” Identifier
 
 We need this to help evaluate whether samples are “normal” samples or
@@ -289,12 +300,12 @@ recent_data %>%
 #> # A tibble: 6 x 8
 #>   SiteCode years median_Bacteria gmean_bacteria mean_Bacteria     n n_exceeds
 #> * <chr>    <int>           <dbl>          <dbl>         <dbl> <int>     <int>
-#> 1 BC-1         4            3.53           7.43         37.1     51         2
-#> 2 EEB-01       4           10              9.43         36.1    103         8
-#> 3 HARP-1       2            3.46           3.92          4.24    25         0
-#> 4 HARP-2       2            3.51           7.34         18.4     26         1
-#> 5 HARP-3       2           20             17.0          41.8     26         4
-#> 6 WIL-02       4           10             14.9         244.     105         9
+#> 1 BC-1         4            3.54           7.43         37.1     51         2
+#> 2 EEB-01       4           10              9.41         36.1    103         8
+#> 3 HARP-1       2            3.49           3.93          4.25    25         0
+#> 4 HARP-2       2            3.48           7.29         18.3     26         1
+#> 5 HARP-3       2           20             16.9          41.8     26         4
+#> 6 WIL-02       4           10             14.8         244.     105         9
 #> # ... with 1 more variable: p_exceeds <dbl>
 ```
 
@@ -316,12 +327,12 @@ cat('\nNon-detects at maximum likelihood estimator\n')
 #> Non-detects at maximum likelihood estimator
 summary(recent_data$Bacteria2)
 #>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-#>     3.184     3.441    10.000    97.865    20.000 15531.000
+#>     3.175     3.431    10.000    97.857    20.000 15531.000
 cat('\nGeometric Mean\n')
 #> 
 #> Geometric Mean
 exp(mean(log(recent_data$Bacteria2)))
-#> [1] 10.08902
+#> [1] 10.06612
 cat('\n\nProbability of Violating Standard\n')
 #> 
 #> 
@@ -349,8 +360,7 @@ recent_data %>%
                stackdir = "centerwhole", 
                position = "dodge",
                binpositions = 'all',
-               method = 'histodot', 
-               shape = 22,
+               method = 'histodot',
                stroke = 0,
                binwidth = .2) +
   stat_summary(fun = gm_mean, fill = 'red', shape = 23) +
@@ -365,7 +375,6 @@ recent_data %>%
 
   ylab('Enterococci (MPN)') +
   xlab('') 
-#> Warning: Ignoring unknown parameters: shape
 #> Warning: Removed 6 rows containing missing values (geom_segment).
 ```
 
