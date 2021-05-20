@@ -247,7 +247,7 @@ recent_data %>%
     theme(axis.text.x = element_text(angle = 45, size = 9, hjust = 1),
         legend.position = 'none') +
 
-  ylab('Enterococci (MPN)') +
+  ylab('Enterococci (MPN/100ml)') +
   xlab('') 
 
   #geom_bar(data = plain_emms, mapping = aes(Beach, response))
@@ -274,7 +274,7 @@ jitter_plt <- recent_data %>%
   
   guides(color = guide_legend(override.aes = list(alpha = c(0.5,0.751) ) )) +
 
-  ylab('Enterococci (MPN)') +
+  ylab('Enterococci (MPN/100ml)') +
   xlab('')
 ```
 
@@ -340,7 +340,7 @@ violin_plt <- recent_data %>%
 
   guides(color = guide_legend(override.aes = list(alpha = c(0.5,0.75) ) )) +
 
-  ylab('Enterococci (MPN)') +
+  ylab('Enterococci (MPN/100ml)') +
   xlab('')
 ```
 
@@ -385,7 +385,7 @@ recent_data %>%
   
   theme(axis.text.x = element_text(angle = 45, size = 9, hjust = 1)) +
 
-  ylab('Enterococci (MPN)') +
+  ylab('Enterococci (MPN/100ml)') +
   xlab('') +
   stat_summary(fun = gm_mean, fill = 'red',shape = 22)
 ```
@@ -417,7 +417,7 @@ plt <- recent_data %>%
         legend.text = element_text(size = 8),
         legend.key.height = unit(10, 'points')) +
 
-  ylab('Enterococci (MPN)') +
+  ylab('Enterococci (MPN/100ml)') +
   xlab('')
 ```
 
@@ -481,7 +481,7 @@ plt <- ggplot(trend_data, aes(x = Year, y = Bacteria, color = Censored_Flag)) +
   scale_x_continuous(breaks = c(2006, 2010, 2014, 2018)) +
   
   xlab('') +
-  ylab('Enterococci (MPN)') +
+  ylab('Enterococci (MPN/100ml)') +
   
   theme_cbep(base_size = 14) +
   theme(panel.border = element_rect(color = 'gray85', fill = NA)) + 

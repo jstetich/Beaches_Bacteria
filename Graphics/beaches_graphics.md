@@ -28,7 +28,7 @@ Curtis C. Bohlen, Casco Bay Estuary Partnership.
         Estimator](#based-on-non-detects-at-maximum-likelihood-estimator)
 -   [Create Geometric Mean Function](#create-geometric-mean-function)
 -   [Plots of Recent Condition](#plots-of-recent-condition)
-    -   [Dot Plot (Fails….)](#dot-plot-fails.)
+    -   [Dot Plot (Fails….)](#dot-plot-fails)
     -   [Jitter Plot](#jitter-plot)
         -   [Add Geometric Means](#add-geometric-means)
         -   [Add Annotations](#add-annotations)
@@ -114,11 +114,15 @@ library(fitdistrplus)
 #> Loading required package: MASS
 #> Loading required package: survival
 library(tidyverse)
-#> -- Attaching packages --------------------------------------- tidyverse 1.3.0 --
+#> Warning: package 'tidyverse' was built under R version 4.0.5
+#> -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
 #> v ggplot2 3.3.3     v purrr   0.3.4
-#> v tibble  3.0.5     v dplyr   1.0.3
-#> v tidyr   1.1.2     v stringr 1.4.0
-#> v readr   1.4.0     v forcats 0.5.0
+#> v tibble  3.1.2     v dplyr   1.0.6
+#> v tidyr   1.1.3     v stringr 1.4.0
+#> v readr   1.4.0     v forcats 0.5.1
+#> Warning: package 'tidyr' was built under R version 4.0.5
+#> Warning: package 'dplyr' was built under R version 4.0.5
+#> Warning: package 'forcats' was built under R version 4.0.5
 #> -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
@@ -127,13 +131,14 @@ library(tidyverse)
 # library(GGally)
 
 library(mgcv)      # For GAMs and GAMMs; used here for seasonal smoothers
+#> Warning: package 'mgcv' was built under R version 4.0.5
 #> Loading required package: nlme
 #> 
 #> Attaching package: 'nlme'
 #> The following object is masked from 'package:dplyr':
 #> 
 #>     collapse
-#> This is mgcv 1.8-33. For overview type 'help("mgcv-package")'.
+#> This is mgcv 1.8-35. For overview type 'help("mgcv-package")'.
 library(emmeans)   # For marginal means
 
 library(mblm)      # for the Thiel-Sen estimators
@@ -272,10 +277,10 @@ recent_data %>%
              p_exceeds = n_exceeds / n)
 #> # A tibble: 6 x 8
 #>   SiteCode years median_Bacteria gmean_bacteria mean_Bacteria     n n_exceeds
-#> * <chr>    <int>           <dbl>          <dbl>         <dbl> <int>     <int>
+#>   <chr>    <int>           <dbl>          <dbl>         <dbl> <int>     <int>
 #> 1 BC-1         4              10           13.7          40.8    51         2
 #> 2 EEB-01       4              10           16.0          39.4   103         8
-#> 3 HARP-1       2              10           10.           10      25         0
+#> 3 HARP-1       2              10           10            10      25         0
 #> 4 HARP-2       2              10           14.7          22.7    26         1
 #> 5 HARP-3       2              20           23.7          43.9    26         4
 #> 6 WIL-02       4              10           21.9         246.    105         9
@@ -299,12 +304,12 @@ recent_data %>%
              p_exceeds = n_exceeds / n)
 #> # A tibble: 6 x 8
 #>   SiteCode years median_Bacteria gmean_bacteria mean_Bacteria     n n_exceeds
-#> * <chr>    <int>           <dbl>          <dbl>         <dbl> <int>     <int>
+#>   <chr>    <int>           <dbl>          <dbl>         <dbl> <int>     <int>
 #> 1 BC-1         4            3.54           7.43         37.1     51         2
-#> 2 EEB-01       4           10              9.41         36.1    103         8
-#> 3 HARP-1       2            3.49           3.93          4.25    25         0
-#> 4 HARP-2       2            3.48           7.29         18.3     26         1
-#> 5 HARP-3       2           20             16.9          41.8     26         4
+#> 2 EEB-01       4           10              9.43         36.1    103         8
+#> 3 HARP-1       2            3.46           3.91          4.22    25         0
+#> 4 HARP-2       2            3.43           7.26         18.3     26         1
+#> 5 HARP-3       2           20             17.1          41.9     26         4
 #> 6 WIL-02       4           10             14.8         244.     105         9
 #> # ... with 1 more variable: p_exceeds <dbl>
 ```
@@ -327,12 +332,12 @@ cat('\nNon-detects at maximum likelihood estimator\n')
 #> Non-detects at maximum likelihood estimator
 summary(recent_data$Bacteria2)
 #>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-#>     3.175     3.431    10.000    97.857    20.000 15531.000
+#>     3.221     3.427    10.000    97.856    20.000 15531.000
 cat('\nGeometric Mean\n')
 #> 
 #> Geometric Mean
 exp(mean(log(recent_data$Bacteria2)))
-#> [1] 10.06612
+#> [1] 10.06182
 cat('\n\nProbability of Violating Standard\n')
 #> 
 #> 
@@ -373,7 +378,7 @@ recent_data %>%
     theme(axis.text.x = element_text(angle = 45, size = 9, hjust = 1),
         legend.position = 'none') +
 
-  ylab('Enterococci (MPN)') +
+  ylab('Enterococci (MPN/100ml)') +
   xlab('') 
 #> Warning: Removed 6 rows containing missing values (geom_segment).
 ```
@@ -406,7 +411,7 @@ jitter_plt <- recent_data %>%
   
   guides(color = guide_legend(override.aes = list(alpha = c(0.5,0.751) ) )) +
 
-  ylab('Enterococci (MPN)') +
+  ylab('Enterococci (MPN/100ml)') +
   xlab('')
 ```
 
@@ -482,7 +487,7 @@ violin_plt <- recent_data %>%
 
   guides(color = guide_legend(override.aes = list(alpha = c(0.5,0.75) ) )) +
 
-  ylab('Enterococci (MPN)') +
+  ylab('Enterococci (MPN/100ml)') +
   xlab('')
 ```
 
@@ -537,7 +542,7 @@ recent_data %>%
   
   theme(axis.text.x = element_text(angle = 45, size = 9, hjust = 1)) +
 
-  ylab('Enterococci (MPN)') +
+  ylab('Enterococci (MPN/100ml)') +
   xlab('') +
   stat_summary(fun = gm_mean, fill = 'red',shape = 22)
 #> Warning: Removed 6 rows containing missing values (geom_segment).
@@ -573,7 +578,7 @@ plt <- recent_data %>%
         legend.text = element_text(size = 8),
         legend.key.height = unit(10, 'points')) +
 
-  ylab('Enterococci (MPN)') +
+  ylab('Enterococci (MPN/100ml)') +
   xlab('')
 ```
 
@@ -647,7 +652,7 @@ plt <- ggplot(trend_data, aes(x = Year, y = Bacteria, color = Censored_Flag)) +
   scale_x_continuous(breaks = c(2006, 2010, 2014, 2018)) +
   
   xlab('') +
-  ylab('Enterococci (MPN)') +
+  ylab('Enterococci (MPN/100ml)') +
   
   theme_cbep(base_size = 14) +
   theme(panel.border = element_rect(color = 'gray85', fill = NA)) + 
