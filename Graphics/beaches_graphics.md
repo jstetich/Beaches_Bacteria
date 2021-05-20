@@ -305,12 +305,12 @@ recent_data %>%
 #> # A tibble: 6 x 8
 #>   SiteCode years median_Bacteria gmean_bacteria mean_Bacteria     n n_exceeds
 #>   <chr>    <int>           <dbl>          <dbl>         <dbl> <int>     <int>
-#> 1 BC-1         4            3.51           7.43         37.1     51         2
-#> 2 EEB-01       4           10              9.43         36.1    103         8
-#> 3 HARP-1       2            3.49           3.93          4.24    25         0
-#> 4 HARP-2       2            3.46           7.29         18.3     26         1
+#> 1 BC-1         4            3.54           7.44         37.1     51         2
+#> 2 EEB-01       4           10              9.42         36.1    103         8
+#> 3 HARP-1       2            3.49           3.96          4.27    25         0
+#> 4 HARP-2       2            3.51           7.34         18.4     26         1
 #> 5 HARP-3       2           20             17.0          41.9     26         4
-#> 6 WIL-02       4           10             14.8         244.     105         9
+#> 6 WIL-02       4           10             14.9         244.     105         9
 #> # ... with 1 more variable: p_exceeds <dbl>
 ```
 
@@ -332,12 +332,12 @@ cat('\nNon-detects at maximum likelihood estimator\n')
 #> Non-detects at maximum likelihood estimator
 summary(recent_data$Bacteria2)
 #>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-#>     3.263     3.432    10.000    97.860    20.000 15531.000
+#>     3.166     3.441    10.000    97.865    20.000 15531.000
 cat('\nGeometric Mean\n')
 #> 
 #> Geometric Mean
 exp(mean(log(recent_data$Bacteria2)))
-#> [1] 10.07605
+#> [1] 10.0894
 cat('\n\nProbability of Violating Standard\n')
 #> 
 #> 
@@ -370,7 +370,7 @@ recent_data %>%
                binwidth = .2) +
   stat_summary(fun = gm_mean, fill = 'red', shape = 23) +
   
-  geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
+  geom_hline(yintercept = 104, color = 'gray25', lty = 2) +
   
   scale_y_log10() +
   scale_fill_manual(values = cbep_colors()) +
@@ -407,7 +407,7 @@ jitter_plt <- recent_data %>%
   theme_cbep(base_size = 12) +
 
   theme(axis.text.x = element_text(angle = 45, size = 9, hjust = 1)) +
-  theme(legend.position = c(.65, .9)) +
+  theme(legend.position = c(.6, .9)) +
   
   guides(color = guide_legend(override.aes = list(alpha = c(0.5,0.751) ) )) +
 
@@ -437,8 +437,8 @@ jitter_plt <- jitter_plt +
 
 ``` r
 jitter_plt +
-  geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
-  #geom_hline(yintercept = 8, color = 'gray50', lty = 3) +
+  geom_hline(yintercept = 104, color = 'gray25', lty = 2) +
+  #geom_hline(yintercept = 8, color = 'gray25', lty = 2) +
   
   annotate('text', x = 0, y  = 130, label = '104 MPN', size = 2.5, hjust = 0) +
   #annotate('text', x = 0, y = 6, label = 'Chronic = 8', size = 2.5, hjust = 0) 
@@ -473,7 +473,7 @@ violin_plt <- recent_data %>%
               height = .05,
               alpha = 0.5) +
   
-  geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
+  geom_hline(yintercept = 104, color = 'gray25', lty = 2) +
   annotate('text', x = 0, y  = 130, label = '104 MPN', size = 2.5, hjust = 0) +
   
   scale_y_log10() +
@@ -528,8 +528,8 @@ recent_data %>%
               height = .05, 
               alpha = 1) +
   
-  geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
-  #geom_hline(yintercept = 8, color = 'gray50', lty = 3) +
+  geom_hline(yintercept = 104, color = 'gray25', lty = 2) +
+  #geom_hline(yintercept = 8, color = 'gray25', lty = 2) +
   
   scale_y_log10() +
   
@@ -562,7 +562,7 @@ plt <- recent_data %>%
               #color = cbep_colors()[5],
               alpha = 0.5) +
   
-  geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
+  geom_hline(yintercept = 104, color = 'gray25', lty = 2) +
   annotate('text', x = 0, y  = 130, label = '104 MPN', size = 2.5, hjust = 0) +
   
   scale_y_log10() +

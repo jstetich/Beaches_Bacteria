@@ -239,7 +239,7 @@ recent_data %>%
                binwidth = .2) +
   stat_summary(fun = gm_mean, fill = 'red', shape = 23) +
   
-  geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
+  geom_hline(yintercept = 104, color = 'gray25', lty = 2) +
   
   scale_y_log10() +
   scale_fill_manual(values = cbep_colors()) +
@@ -270,7 +270,7 @@ jitter_plt <- recent_data %>%
   theme_cbep(base_size = 12) +
 
   theme(axis.text.x = element_text(angle = 45, size = 9, hjust = 1)) +
-  theme(legend.position = c(.65, .9)) +
+  theme(legend.position = c(.6, .9)) +
   
   guides(color = guide_legend(override.aes = list(alpha = c(0.5,0.751) ) )) +
 
@@ -297,8 +297,8 @@ jitter_plt <- jitter_plt +
 ### Add Annotations
 ```{r jitter_all, fig.width = 5, fig.height = 4}
 jitter_plt +
-  geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
-  #geom_hline(yintercept = 8, color = 'gray50', lty = 3) +
+  geom_hline(yintercept = 104, color = 'gray25', lty = 2) +
+  #geom_hline(yintercept = 8, color = 'gray25', lty = 2) +
   
   annotate('text', x = 0, y  = 130, label = '104 MPN', size = 2.5, hjust = 0) +
   #annotate('text', x = 0, y = 6, label = 'Chronic = 8', size = 2.5, hjust = 0) 
@@ -326,7 +326,7 @@ violin_plt <- recent_data %>%
               height = .05,
               alpha = 0.5) +
   
-  geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
+  geom_hline(yintercept = 104, color = 'gray25', lty = 2) +
   annotate('text', x = 0, y  = 130, label = '104 MPN', size = 2.5, hjust = 0) +
   
   scale_y_log10() +
@@ -371,8 +371,8 @@ recent_data %>%
               height = .05, 
               alpha = 1) +
   
-  geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
-  #geom_hline(yintercept = 8, color = 'gray50', lty = 3) +
+  geom_hline(yintercept = 104, color = 'gray25', lty = 2) +
+  #geom_hline(yintercept = 8, color = 'gray25', lty = 2) +
   
   scale_y_log10() +
   
@@ -401,7 +401,7 @@ plt <- recent_data %>%
               #color = cbep_colors()[5],
               alpha = 0.5) +
   
-  geom_hline(yintercept = 104, color = 'gray50', lty = 3) +
+  geom_hline(yintercept = 104, color = 'gray25', lty = 2) +
   annotate('text', x = 0, y  = 130, label = '104 MPN', size = 2.5, hjust = 0) +
   
   scale_y_log10() +
