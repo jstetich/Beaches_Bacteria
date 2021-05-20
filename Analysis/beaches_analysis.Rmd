@@ -231,11 +231,7 @@ ggplot(beach_data, aes(Bacteria2, fill =Censored_Flag)) +
 ```
 So, other than the superabundance of observations at the lower detection limits,
 and perhaps a concentration of values at the maximum observed value (right
-censored?), this shows every sign of being close to a Pareto distribution. (The
-apparent "gaps" in lower concentrations are due to the MPN method, which provide
-certain distinct possible values.  Technically, we are dealing with interval 
-censored data, a complexity we chose not to address.) 
-
+censored?), this shows every sign of being close to a Pareto distribution.
 But when we try to overplot a Pareto distribution, the scales do not appear
 to match (by a factor of about 5), although shape appears reasonable.
 
@@ -388,7 +384,7 @@ The model fails to address extreme values.
 ```
 ```{r plot_lm_emms}
 plot(emms) + 
-  xlab('Enteroccocci\n(MPN CFU/100 ml)') +
+  xlab('Enteroccocci\n(MPN / 100 ml)') +
   coord_flip() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25))
 ```
@@ -441,7 +437,7 @@ result is that sites do not differ in average bacteria levels.
 
 ```{r plot_gamma_glm_emms}
 plot(emms) + 
-  xlab('Enteroccocci\n(MPN CFU/100ml)') +
+  xlab('Enteroccocci\n(MPN / 100 ml)') +
   coord_flip()
 ```
 

@@ -250,7 +250,7 @@ anova(lograin_lm)
 ```
 ```{r plot_lm_log_rain}
 plot(emms) + 
-  xlab('Enteroccocci\n(MPN CFU/100 ml)') +
+  xlab('Enteroccocci\n(MPN / 100 ml)') +
   coord_flip() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25))
 ```
@@ -312,7 +312,7 @@ result is that sites do not differ in average bacteria levels.
 
 ```{r plot_gamma_glm}
 plot(emms) + 
-  xlab('Enteroccocci\n(MPN CFU/100ml)') +
+  xlab('Enteroccocci\n(MPN / 100ml)') +
   coord_flip()
 ```
 

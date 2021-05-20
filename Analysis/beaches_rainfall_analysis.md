@@ -44,11 +44,15 @@ library(fitdistrplus)
 #> Loading required package: MASS
 #> Loading required package: survival
 library(tidyverse)
-#> -- Attaching packages --------------------------------------- tidyverse 1.3.0 --
+#> Warning: package 'tidyverse' was built under R version 4.0.5
+#> -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
 #> v ggplot2 3.3.3     v purrr   0.3.4
-#> v tibble  3.0.5     v dplyr   1.0.3
-#> v tidyr   1.1.2     v stringr 1.4.0
-#> v readr   1.4.0     v forcats 0.5.0
+#> v tibble  3.1.2     v dplyr   1.0.6
+#> v tidyr   1.1.3     v stringr 1.4.0
+#> v readr   1.4.0     v forcats 0.5.1
+#> Warning: package 'tidyr' was built under R version 4.0.5
+#> Warning: package 'dplyr' was built under R version 4.0.5
+#> Warning: package 'forcats' was built under R version 4.0.5
 #> -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
@@ -57,13 +61,14 @@ library(tidyverse)
 # library(GGally)
 
 library(mgcv)      # For GAMs and GAMMs; used here for seasonal smoothers
+#> Warning: package 'mgcv' was built under R version 4.0.5
 #> Loading required package: nlme
 #> 
 #> Attaching package: 'nlme'
 #> The following object is masked from 'package:dplyr':
 #> 
 #>     collapse
-#> This is mgcv 1.8-33. For overview type 'help("mgcv-package")'.
+#> This is mgcv 1.8-35. For overview type 'help("mgcv-package")'.
 library(emmeans)   # For marginal means
 
 library(mblm)      # for the Thiel-Sen estimators
@@ -450,11 +455,11 @@ recent_data %>%
              p_exceeds = n_exceeds / n)
 #> # A tibble: 6 x 8
 #>   SiteCode years median_Bacteria gmean_bacteria mean_Bacteria     n n_exceeds
-#> * <chr>    <int>           <dbl>          <dbl>         <dbl> <int>     <int>
-#> 1 BC-1         4            3.50           7.45         37.1     51         2
-#> 2 EEB-01       4           10              9.43         36.1    103         8
-#> 3 HARP-1       2            3.42           3.87          4.19    25         0
-#> 4 HARP-2       2            3.47           7.33         18.4     26         1
+#>   <chr>    <int>           <dbl>          <dbl>         <dbl> <int>     <int>
+#> 1 BC-1         4            3.58           7.47         37.1     51         2
+#> 2 EEB-01       4           10              9.42         36.1    103         8
+#> 3 HARP-1       2            3.43           3.90          4.22    25         0
+#> 4 HARP-2       2            3.47           7.29         18.3     26         1
 #> 5 HARP-3       2           20             17.1          41.9     26         4
 #> 6 WIL-02       4           10             14.8         244.     105         9
 #> # ... with 1 more variable: p_exceeds <dbl>
@@ -538,7 +543,7 @@ anova(lograin_lm)
 
 ``` r
 plot(emms) + 
-  xlab('Enteroccocci\n(MPN CFU/100 ml)') +
+  xlab('Enteroccocci\n(MPN / 100 ml)') +
   coord_flip() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25))
 ```
@@ -625,7 +630,7 @@ strongest result is that sites do not differ in average bacteria levels.
 
 ``` r
 plot(emms) + 
-  xlab('Enteroccocci\n(MPN CFU/100ml)') +
+  xlab('Enteroccocci\n(MPN / 100ml)') +
   coord_flip()
 ```
 
@@ -740,7 +745,7 @@ beach_data %>%
             n_Rain48 = sum(! is.na(Rain48)))
 #> # A tibble: 20 x 3
 #>     Year n_Rain24 n_Rain48
-#>  * <dbl>    <int>    <int>
+#>    <dbl>    <int>    <int>
 #>  1  2000        0        0
 #>  2  2001        0        0
 #>  3  2002        0        0
@@ -856,11 +861,11 @@ anova(trend_glm, test = 'LRT')
 #> 
 #> 
 #>               Df Deviance Resid. Df Resid. Dev  Pr(>Chi)    
-#> NULL                            712     224.51              
-#> Beach          1    2.235       711     222.28  0.004259 ** 
-#> Year           1    1.113       710     221.16  0.043747 *  
-#> log1p(Rain48)  1   34.368       709     186.80 < 2.2e-16 ***
-#> Beach:Year     1    0.263       708     186.53  0.326722    
+#> NULL                            712     224.88              
+#> Beach          1    2.257       711     222.62  0.004105 ** 
+#> Year           1    1.080       710     221.54  0.047102 *  
+#> log1p(Rain48)  1   34.432       709     187.11 < 2.2e-16 ***
+#> Beach:Year     1    0.257       708     186.85  0.333162    
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -878,24 +883,24 @@ summary(trend_glm)
 #> 
 #> Deviance Residuals: 
 #>      Min        1Q    Median        3Q       Max  
-#> -1.45656  -0.57287  -0.06858   0.28903   1.51387  
+#> -1.46233  -0.57477  -0.06861   0.28872   1.51365  
 #> 
 #> Coefficients:
 #>                          Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)             -6.394872   5.715948  -1.119    0.264    
-#> BeachWillard Beach       7.928478   8.146912   0.973    0.331    
-#> Year                     0.003394   0.002840   1.195    0.232    
-#> log1p(Rain48)           -0.167613   0.012052 -13.907   <2e-16 ***
-#> BeachWillard Beach:Year -0.003964   0.004047  -0.979    0.328    
+#> (Intercept)             -6.221247   5.721304  -1.087    0.277    
+#> BeachWillard Beach       7.829071   8.153312   0.960    0.337    
+#> Year                     0.003308   0.002842   1.164    0.245    
+#> log1p(Rain48)           -0.167798   0.012058 -13.916   <2e-16 ***
+#> BeachWillard Beach:Year -0.003914   0.004050  -0.966    0.334    
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> (Dispersion parameter for Gamma family taken to be 0.273606)
+#> (Dispersion parameter for Gamma family taken to be 0.2739711)
 #> 
-#>     Null deviance: 224.51  on 712  degrees of freedom
-#> Residual deviance: 186.53  on 708  degrees of freedom
+#>     Null deviance: 224.88  on 712  degrees of freedom
+#> Residual deviance: 186.85  on 708  degrees of freedom
 #>   (17 observations deleted due to missingness)
-#> AIC: 2332.7
+#> AIC: 2333.3
 #> 
 #> Number of Fisher Scoring iterations: 5
 ```
@@ -905,8 +910,8 @@ emtrends(trend_glm, ~ Beach,
          var = "Year", 
          at = list(Rain48 = 0))
 #>  Beach          Year.trend      SE  df asymp.LCL asymp.UCL
-#>  East End Beach    0.00339 0.00284 Inf  -0.00217   0.00896
-#>  Willard Beach    -0.00057 0.00293 Inf  -0.00631   0.00517
+#>  East End Beach   0.003308 0.00284 Inf  -0.00226   0.00888
+#>  Willard Beach   -0.000607 0.00293 Inf  -0.00635   0.00514
 #> 
 #> Results are given on the log (not the response) scale. 
 #> Confidence level used: 0.95

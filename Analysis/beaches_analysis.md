@@ -78,11 +78,15 @@ library(fitdistrplus)  # Loads MASS, which has `select()`, so load first
 #> Loading required package: MASS
 #> Loading required package: survival
 library(tidyverse)     # Loads another `select()`
-#> -- Attaching packages --------------------------------------- tidyverse 1.3.0 --
+#> Warning: package 'tidyverse' was built under R version 4.0.5
+#> -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
 #> v ggplot2 3.3.3     v purrr   0.3.4
-#> v tibble  3.0.5     v dplyr   1.0.3
-#> v tidyr   1.1.2     v stringr 1.4.0
-#> v readr   1.4.0     v forcats 0.5.0
+#> v tibble  3.1.2     v dplyr   1.0.6
+#> v tidyr   1.1.3     v stringr 1.4.0
+#> v readr   1.4.0     v forcats 0.5.1
+#> Warning: package 'tidyr' was built under R version 4.0.5
+#> Warning: package 'dplyr' was built under R version 4.0.5
+#> Warning: package 'forcats' was built under R version 4.0.5
 #> -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
@@ -512,14 +516,9 @@ ggplot(beach_data, aes(Bacteria2, fill =Censored_Flag)) +
 So, other than the superabundance of observations at the lower detection
 limits, and perhaps a concentration of values at the maximum observed
 value (right censored?), this shows every sign of being close to a
-Pareto distribution. (The apparent “gaps” in lower concentrations are
-due to the MPN method, which provide certain distinct possible values.
-Technically, we are dealing with interval censored data, a complexity we
-chose not to address.)
-
-But when we try to overplot a Pareto distribution, the scales do not
-appear to match (by a factor of about 5), although shape appears
-reasonable.
+Pareto distribution. But when we try to overplot a Pareto distribution,
+the scales do not appear to match (by a factor of about 5), although
+shape appears reasonable.
 
 We are fitting a Pareto distribution with minimum value `location = 0`,
 and using data that has been corrected for left censoring. Results are
@@ -531,8 +530,8 @@ paretofit = vglm(Bacteria2~ 1, paretoII(location = 0) , data = beach_data)
 parms <- exp(coef(paretofit))
 names(parms) <- c('Scale', 'Shape')
 parms
-#>     Scale     Shape 
-#> 9.3814644 0.9167312
+#>    Scale    Shape 
+#> 9.409698 0.917774
 #predict(paretofit, newdata = data.frame(x = 1))
 ```
 
@@ -617,14 +616,14 @@ recent_data %>%
              n_exceeds = sum(Exceeds, na.rm = TRUE),
              p_exceeds = n_exceeds / n)
 #> # A tibble: 6 x 9
-#>   Beach years median_Bacteria gmean_bacteria mean_Bacteria p90_Bacteria     n
-#> * <chr> <int>           <dbl>          <dbl>         <dbl>        <dbl> <int>
-#> 1 Broa~     4            3.57           7.43         37.1         20       51
-#> 2 East~     4           10              9.42         36.1         58.0    103
-#> 3 Mack~     2           20             17.0          41.9        122       26
-#> 4 Mitc~     2            3.52           7.32         18.4         46       26
-#> 5 Stov~     2            3.41           3.88          4.20         7.45    25
-#> 6 Will~     4           10             14.8         244.          97      105
+#>   Beach    years median_Bacteria gmean_bacteria mean_Bacteria p90_Bacteria     n
+#>   <chr>    <int>           <dbl>          <dbl>         <dbl>        <dbl> <int>
+#> 1 Broad C~     4            3.53           7.45         37.1         20       51
+#> 2 East En~     4           10              9.43         36.1         58      103
+#> 3 Mackere~     2           20             17.1          41.9        122       26
+#> 4 Mitchel~     2            3.51           7.32         18.4         46       26
+#> 5 Stovers~     2            3.44           3.91          4.23         7.45    25
+#> 6 Willard~     4           10             14.9         244.          97      105
 #> # ... with 2 more variables: n_exceeds <int>, p_exceeds <dbl>
 ```
 
@@ -651,12 +650,12 @@ cat('\nNon-detects at maximum likelihood estimator\n')
 #> Non-detects at maximum likelihood estimator
 summary(recent_data$Bacteria2)
 #>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-#>     3.186     3.411    10.000    97.856    20.000 15531.000
+#>     3.252     3.440    10.000    97.866    20.000 15531.000
 cat('\nGeometric Mean\n')
 #> 
 #> Geometric Mean
 exp(mean(log(recent_data$Bacteria2)))
-#> [1] 10.06318
+#> [1] 10.09248
 cat('\n\nProbability of Violating Standards\n')
 #> 
 #> 
@@ -739,7 +738,7 @@ The model fails to address extreme values.
 
 ``` r
 plot(emms) + 
-  xlab('Enteroccocci\n(MPN CFU/100 ml)') +
+  xlab('Enteroccocci\n(MPN / 100 ml)') +
   coord_flip() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25))
 ```
@@ -826,7 +825,7 @@ strongest result is that sites do not differ in average bacteria levels.
 
 ``` r
 plot(emms) + 
-  xlab('Enteroccocci\n(MPN CFU/100ml)') +
+  xlab('Enteroccocci\n(MPN / 100 ml)') +
   coord_flip()
 ```
 
@@ -865,7 +864,7 @@ anova.vglm(pareto_vglm)  # ANOVA returns an error
 #> Response: Bacteria2
 #> 
 #>       Df 2 * LogLik Diff. Resid. Df  LogLik Pr(>Chi)  
-#> Beach  8           15.774       620 -1295.9  0.04573 *
+#> Beach  8           15.874       620 -1296.3  0.04421 *
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -882,24 +881,24 @@ summary(pareto_vglm)
 #> 
 #> Coefficients: 
 #>                              Estimate Std. Error z value Pr(>|z|)    
-#> (Intercept):1                2.397920   0.538307   4.455 8.41e-06 ***
-#> (Intercept):2                0.422786   0.354505   1.193    0.233    
-#> BeachEast End Beach:1        0.022422   0.647113   0.035    0.972    
-#> BeachEast End Beach:2       -0.181203   0.419340  -0.432    0.666    
-#> BeachMackerel Cove:1         1.084065   0.939367   1.154    0.248    
-#> BeachMackerel Cove:2         0.066231   0.625982   0.106    0.916    
-#> BeachMitchell Field Beach:1  0.005824   0.924082   0.006    0.995    
-#> BeachMitchell Field Beach:2 -0.008160   0.607224  -0.013    0.989    
-#> BeachWillard Beach:1         0.022701   0.633646   0.036    0.971    
-#> BeachWillard Beach:2        -0.496394   0.401390  -1.237    0.216    
+#> (Intercept):1                2.404708   0.538789   4.463 8.08e-06 ***
+#> (Intercept):2                0.425586   0.355102   1.198    0.231    
+#> BeachEast End Beach:1        0.017625   0.647556   0.027    0.978    
+#> BeachEast End Beach:2       -0.183167   0.419901  -0.436    0.663    
+#> BeachMackerel Cove:1         1.094093   0.941680   1.162    0.245    
+#> BeachMackerel Cove:2         0.072739   0.628785   0.116    0.908    
+#> BeachMitchell Field Beach:1 -0.001568   0.924314  -0.002    0.999    
+#> BeachMitchell Field Beach:2 -0.011212   0.607512  -0.018    0.985    
+#> BeachWillard Beach:1         0.022258   0.634116   0.035    0.972    
+#> BeachWillard Beach:2        -0.496798   0.402019  -1.236    0.217    
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
 #> Names of linear predictors: loglink(scale), loglink(shape)
 #> 
-#> Log-likelihood: -1288.023 on 612 degrees of freedom
+#> Log-likelihood: -1288.37 on 612 degrees of freedom
 #> 
-#> Number of Fisher scoring iterations: 38 
+#> Number of Fisher scoring iterations: 40 
 #> 
 #> No Hauck-Donner effect found in any of the estimates
 ```
@@ -921,11 +920,11 @@ rownames(ptab) <-  sites$Beach
 colnames(ptab) = c('log_Scale', 'log_Shape', 'log_Scale_SD', 'log_Shape_SD')
 ptab
 #>                      log_Scale   log_Shape log_Scale_SD log_Shape_SD
-#> Willard Beach         2.420621 -0.07360816    0.3342656    0.1882546
-#> East End Beach        2.420342  0.24158321    0.3591389    0.2239913
-#> Broad Cove Reserve    2.397920  0.42278583    0.5383068    0.3545053
-#> Mackerel Cove         3.481985  0.48901732    0.7698285    0.5159253
-#> Mitchell Field Beach  2.403745  0.41462563    0.7511016    0.4929975
+#> Willard Beach         2.426966 -0.07121183    0.3343783    0.1884721
+#> East End Beach        2.422333  0.24241966    0.3592155    0.2240963
+#> Broad Cove Reserve    2.404708  0.42558649    0.5387891    0.3551020
+#> Mackerel Cove         3.498801  0.49832538    0.7723127    0.5189160
+#> Mitchell Field Beach  2.403140  0.41437446    0.7510417    0.4929230
 ```
 
 The call to `predict()` returns estimates of model parameters, which
@@ -1067,7 +1066,7 @@ kruskal.test(Bacteria2 ~ Beach, data = recent_data)
 #>  Kruskal-Wallis rank sum test
 #> 
 #> data:  Bacteria2 by Beach
-#> Kruskal-Wallis chi-squared = 30.731, df = 5, p-value = 1.058e-05
+#> Kruskal-Wallis chi-squared = 31.676, df = 5, p-value = 6.885e-06
 ```
 
 Although the Kruskal-Wallis test is not strictly a comparison of
@@ -1081,12 +1080,12 @@ recent_data %>%
             p90 = quantile(Bacteria2, .9))
 #> # A tibble: 6 x 4
 #>   Beach                  Median    iqr    p90
-#> * <chr>                   <dbl>  <dbl>  <dbl>
-#> 1 Broad Cove Reserve       3.57  6.60   20   
-#> 2 East End Beach          10    16.6    58.0 
+#>   <chr>                   <dbl>  <dbl>  <dbl>
+#> 1 Broad Cove Reserve       3.53  6.58   20   
+#> 2 East End Beach          10    16.6    58   
 #> 3 Mackerel Cove           20    35.0   122   
-#> 4 Mitchell Field Beach     3.52 14.1    46   
-#> 5 Stovers Point Preserve   3.41  0.186   7.45
+#> 4 Mitchell Field Beach     3.51 14.1    46   
+#> 5 Stovers Point Preserve   3.44  0.154   7.45
 #> 6 Willard Beach           10    37.5    97
 ```
 
@@ -1114,17 +1113,17 @@ pairwise.wilcox.test(recent_data$Bacteria2, recent_data$Beach,
 #> data:  recent_data$Bacteria2 and recent_data$Beach 
 #> 
 #>                        Broad Cove Reserve East End Beach Mackerel Cove
-#> East End Beach         0.9549             -              -            
-#> Mackerel Cove          0.1576             0.3408         -            
-#> Mitchell Field Beach   1.0000             1.0000         0.3114       
-#> Stovers Point Preserve 0.1020             0.0053         0.0029       
-#> Willard Beach          0.0342             0.2696         1.0000       
+#> East End Beach         1.00000            -              -            
+#> Mackerel Cove          0.03248            0.11718        -            
+#> Mitchell Field Beach   1.00000            1.00000        0.11966      
+#> Stovers Point Preserve 0.12655            0.02617        0.00021      
+#> Willard Beach          0.06463            0.14281        1.00000      
 #>                        Mitchell Field Beach Stovers Point Preserve
 #> East End Beach         -                    -                     
 #> Mackerel Cove          -                    -                     
 #> Mitchell Field Beach   -                    -                     
-#> Stovers Point Preserve 0.2856               -                     
-#> Willard Beach          0.2696               3.8e-05               
+#> Stovers Point Preserve 0.47614              -                     
+#> Willard Beach          0.14281              9e-05                 
 #> 
 #> P value adjustment method: holm
 ```
@@ -1347,8 +1346,8 @@ map(ts_models$first.mblm, summary)
 #> 
 #> Coefficients:
 #>             Estimate      MAD V value Pr(>|V|)  
-#> (Intercept)   20.000 3306.198   40447   0.0133 *
-#> Year           0.000    1.647   19843   0.1475  
+#> (Intercept)   20.000 3306.198   40328   0.0156 *
+#> Year           0.000    1.647   19875   0.1537  
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
@@ -1366,8 +1365,8 @@ map(ts_models$first.mblm, summary)
 #> 
 #> Coefficients:
 #>             Estimate      MAD V value Pr(>|V|)    
-#> (Intercept)   10.000 2174.436   89155 1.88e-05 ***
-#> Year           0.000    1.084   32363   0.0737 .  
+#> (Intercept)   10.000 2170.675   89247 1.68e-05 ***
+#> Year           0.000    1.082   32209   0.0629 .  
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
@@ -1386,16 +1385,16 @@ map(ts_models$second.mblm, summary)
 #> 
 #> Residuals:
 #>     Min      1Q  Median      3Q     Max 
-#> -1.8369 -1.7460  0.0000  0.9555  6.6549 
+#> -1.8324 -1.7352  0.0000  0.9555  6.6549 
 #> 
 #> Coefficients:
 #>             Estimate      MAD V value Pr(>|V|)   
-#> (Intercept)   2.9957 219.3365   40998  0.00621 **
-#> Year          0.0000   0.1096   19131  0.05343 . 
+#> (Intercept)   2.9957 229.1682   40861  0.00756 **
+#> Year          0.0000   0.1142   19235  0.06277 . 
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 1.657 on 373 degrees of freedom
+#> Residual standard error: 1.655 on 373 degrees of freedom
 #> 
 #> 
 #> [[2]]
@@ -1405,12 +1404,12 @@ map(ts_models$second.mblm, summary)
 #> 
 #> Residuals:
 #>    Min     1Q Median     3Q    Max 
-#> -1.126 -1.059  0.000  1.131  6.704 
+#> -1.148 -1.063  0.000  1.131  6.704 
 #> 
 #> Coefficients:
 #>             Estimate      MAD V value Pr(>|V|)    
-#> (Intercept)   2.3026 295.9661   89521 1.22e-05 ***
-#> Year          0.0000   0.1468   31840   0.0421 *  
+#> (Intercept)   2.3026 295.9661   89296 1.62e-05 ***
+#> Year          0.0000   0.1468   31681   0.0351 *  
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
@@ -1430,10 +1429,10 @@ anova(trend_lm)
 #> 
 #> Response: log(Bacteria2)
 #>             Df  Sum Sq Mean Sq F value   Pr(>F)   
-#> Beach        1   24.67 24.6665  9.8978 0.001708 **
-#> Year         1    5.62  5.6186  2.2545 0.133568   
-#> Beach:Year   1    0.73  0.7304  0.2931 0.588392   
-#> Residuals  913 2275.31  2.4921                    
+#> Beach        1   25.05 25.0510 10.0572 0.001568 **
+#> Year         1    5.57  5.5736  2.2377 0.135031   
+#> Beach:Year   1    0.72  0.7241  0.2907 0.589910   
+#> Residuals  913 2274.14  2.4908                    
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -1446,26 +1445,26 @@ summary(trend_lm)
 #> 
 #> Residuals:
 #>     Min      1Q  Median      3Q     Max 
-#> -1.8707 -1.3738 -0.3199  0.9075  6.7619 
+#> -1.8463 -1.3805 -0.3192  0.9060  6.7598 
 #> 
 #> Coefficients:
 #>                          Estimate Std. Error t value Pr(>|t|)
-#> (Intercept)              53.70473   35.33883   1.520    0.129
-#> BeachWillard Beach      -26.75230   50.03473  -0.535    0.593
-#> Year                     -0.02539    0.01757  -1.445    0.149
-#> BeachWillard Beach:Year   0.01346    0.02487   0.541    0.588
+#> (Intercept)              53.49498   35.32974   1.514    0.130
+#> BeachWillard Beach      -26.63260   50.02185  -0.532    0.595
+#> Year                     -0.02528    0.01756  -1.440    0.150
+#> BeachWillard Beach:Year   0.01341    0.02486   0.539    0.590
 #> 
-#> Residual standard error: 1.579 on 913 degrees of freedom
-#> Multiple R-squared:  0.01345,    Adjusted R-squared:  0.01021 
-#> F-statistic: 4.148 on 3 and 913 DF,  p-value: 0.006223
+#> Residual standard error: 1.578 on 913 degrees of freedom
+#> Multiple R-squared:  0.0136, Adjusted R-squared:  0.01036 
+#> F-statistic: 4.195 on 3 and 913 DF,  p-value: 0.005835
 ```
 
 ``` r
 year_trends <- emtrends(trend_lm, ~ Beach, var = "Year")
 year_trends
 #>  Beach          Year.trend     SE  df lower.CL upper.CL
-#>  East End Beach    -0.0254 0.0176 913  -0.0599  0.00909
-#>  Willard Beach     -0.0119 0.0176 913  -0.0465  0.02263
+#>  East End Beach    -0.0253 0.0176 913  -0.0598  0.00918
+#>  Willard Beach     -0.0119 0.0176 913  -0.0464  0.02267
 #> 
 #> Confidence level used: 0.95
 ```
@@ -1487,10 +1486,10 @@ anova(trend_glm, test = 'LRT')
 #> 
 #> 
 #>            Df Deviance Resid. Df Resid. Dev Pr(>Chi)   
-#> NULL                         916     285.43            
-#> Beach       1   3.1837       915     282.25 0.001798 **
-#> Year        1   0.7176       914     281.53 0.138338   
-#> Beach:Year  1   0.1693       913     281.36 0.471542   
+#> NULL                         916     285.20            
+#> Beach       1   3.2323       915     281.97 0.001654 **
+#> Year        1   0.7115       914     281.25 0.139915   
+#> Beach:Year  1   0.1685       913     281.09 0.472558   
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -1504,20 +1503,20 @@ summary(trend_glm)
 #> 
 #> Deviance Residuals: 
 #>     Min       1Q   Median       3Q      Max  
-#> -0.8236  -0.6645  -0.1260   0.3040   1.5518  
+#> -0.8210  -0.6655  -0.1257   0.3046   1.5522  
 #> 
 #> Coefficients:
 #>                          Estimate Std. Error t value Pr(>|t|)
-#> (Intercept)             -7.060608   4.900801  -1.441    0.150
-#> BeachWillard Beach       4.664135   6.540048   0.713    0.476
-#> Year                     0.003699   0.002436   1.518    0.129
-#> BeachWillard Beach:Year -0.002340   0.003251  -0.720    0.472
+#> (Intercept)             -7.034066   4.900825  -1.435    0.152
+#> BeachWillard Beach       4.651246   6.537553   0.711    0.477
+#> Year                     0.003686   0.002436   1.513    0.131
+#> BeachWillard Beach:Year -0.002334   0.003250  -0.718    0.473
 #> 
-#> (Dispersion parameter for Gamma family taken to be 0.3267014)
+#> (Dispersion parameter for Gamma family taken to be 0.3265365)
 #> 
-#>     Null deviance: 285.43  on 916  degrees of freedom
-#> Residual deviance: 281.36  on 913  degrees of freedom
-#> AIC: 3156
+#>     Null deviance: 285.20  on 916  degrees of freedom
+#> Residual deviance: 281.09  on 913  degrees of freedom
+#> AIC: 3155.5
 #> 
 #> Number of Fisher Scoring iterations: 5
 ```
@@ -1526,8 +1525,8 @@ summary(trend_glm)
 year_trends <- emtrends(trend_glm, ~ Beach, var = "Year")
 year_trends
 #>  Beach          Year.trend      SE  df asymp.LCL asymp.UCL
-#>  East End Beach    0.00370 0.00244 Inf  -0.00108   0.00847
-#>  Willard Beach     0.00136 0.00215 Inf  -0.00286   0.00558
+#>  East End Beach    0.00369 0.00244 Inf  -0.00109   0.00846
+#>  Willard Beach     0.00135 0.00215 Inf  -0.00286   0.00557
 #> 
 #> Results are given on the log (not the response) scale. 
 #> Confidence level used: 0.95
