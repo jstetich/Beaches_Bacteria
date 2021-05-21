@@ -495,7 +495,7 @@ plt <- ggplot(trend_data, aes(x = Year, y = Bacteria, color = Censored_Flag)) +
   # than the default "top" position.
   
   theme( plot.margin=unit(c(.25,.25,.5,.25),"inch"),
-         legend.position = c(.5,1.2),
+         legend.position = c(.5,-.2),
          legend.text = element_text(size = 8),
          legend.key.height = unit(10, 'points')) +
 

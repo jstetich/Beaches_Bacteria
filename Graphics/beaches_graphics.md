@@ -305,12 +305,12 @@ recent_data %>%
 #> # A tibble: 6 x 8
 #>   SiteCode years median_Bacteria gmean_bacteria mean_Bacteria     n n_exceeds
 #>   <chr>    <int>           <dbl>          <dbl>         <dbl> <int>     <int>
-#> 1 BC-1         4            3.54           7.44         37.1     51         2
-#> 2 EEB-01       4           10              9.42         36.1    103         8
-#> 3 HARP-1       2            3.49           3.96          4.27    25         0
-#> 4 HARP-2       2            3.51           7.34         18.4     26         1
+#> 1 BC-1         4            3.56           7.45         37.1     51         2
+#> 2 EEB-01       4           10              9.47         36.1    103         8
+#> 3 HARP-1       2            3.46           3.93          4.24    25         0
+#> 4 HARP-2       2            3.53           7.32         18.4     26         1
 #> 5 HARP-3       2           20             17.0          41.9     26         4
-#> 6 WIL-02       4           10             14.9         244.     105         9
+#> 6 WIL-02       4           10             14.8         244.     105         9
 #> # ... with 1 more variable: p_exceeds <dbl>
 ```
 
@@ -332,12 +332,12 @@ cat('\nNon-detects at maximum likelihood estimator\n')
 #> Non-detects at maximum likelihood estimator
 summary(recent_data$Bacteria2)
 #>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-#>     3.166     3.441    10.000    97.865    20.000 15531.000
+#>     3.219     3.453    10.000    97.868    20.000 15531.000
 cat('\nGeometric Mean\n')
 #> 
 #> Geometric Mean
 exp(mean(log(recent_data$Bacteria2)))
-#> [1] 10.0894
+#> [1] 10.09802
 cat('\n\nProbability of Violating Standard\n')
 #> 
 #> 
@@ -666,7 +666,7 @@ plt <- ggplot(trend_data, aes(x = Year, y = Bacteria, color = Censored_Flag)) +
   # than the default "top" position.
   
   theme( plot.margin=unit(c(.25,.25,.5,.25),"inch"),
-         legend.position = c(.5,1.2),
+         legend.position = c(.5,-.2),
          legend.text = element_text(size = 8),
          legend.key.height = unit(10, 'points')) +
 
